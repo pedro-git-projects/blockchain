@@ -5,8 +5,17 @@ import (
 )
 
 func main() {
+	// first block
 	noobChain := blockchain.NewBlockchain()
-	noobChain.CreateBlock(9, "hash 1")
-	noobChain.CreateBlock(12, "hash 2")
+
+	previousHash := noobChain.LastBlock().Hash()
+	// creating second block storing previous Hash
+	noobChain.CreateBlock(7, previousHash)
+
+	previousHash = noobChain.LastBlock().Hash()
+	// creating second block storing previous Hash
+	noobChain.CreateBlock(3, previousHash)
+
 	noobChain.Print()
+
 }
