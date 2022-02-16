@@ -1,29 +1,26 @@
-// Package block provides blockchain blocks types and functions
-package block
+package blockchain
 
 import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"time"
-
-	"github.com/pedro-git-projects/blockchain/pkg/transaction"
 )
 
 type Block struct {
+	timeStamp    int64
 	nonce        int
 	previousHash [32]byte
-	timeStamp    int64
-	transactions []*transaction.Transaction
+	transactions []*Transaction
 }
 
 // MarshalJSON overloads our json Marshll for blocks exposing  its private struct fields for our hash method  as well as marshaling them into JSON
 func (b *Block) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Nonce        int                        `json:"nonce"`
-		PreviousHash [32]byte                   `json:"previous_hash"`
-		Timestamp    int64                      `json:"timestamp"`
-		Transactions []*transaction.Transaction `json:"transactions"`
+		Nonce        int            `json:"nonce"`
+		PreviousHash [32]byte       `json:"previous_hash"`
+		Timestamp    int64          `json:"timestamp"`
+		Transactions []*Transaction `json:"transactions"`
 	}{
 		Nonce:        b.nonce,
 		PreviousHash: b.previousHash,
@@ -35,17 +32,30 @@ func (b *Block) MarshalJSON() ([]byte, error) {
 // Hash is a method that takes the JSON marshal of a block and hashes it using a sh256 cryptographic function
 func (b *Block) Hash() [32]byte {
 	m, _ := json.Marshal(b)
-	//	fmt.Println(string(m))
 	return sha256.Sum256([]byte(m))
 }
 
 // NewBlock returns a pointer to a new block containing the current timestamp
-func NewBlock(nonce int, previousHash [32]byte, transactions []*transaction.Transaction) *Block {
+func NewBlock(nonce int, previousHash [32]byte, transactions []*Transaction) *Block {
 	b := new(Block)
 	b.timeStamp = time.Now().UnixNano()
 	b.nonce = nonce
 	b.previousHash = previousHash
 	b.transactions = transactions
+	return b
+}
+
+// LastBlock gets the last block on a blockchain
+func (bc *Blockchain) LastBlock() *Block {
+	return bc.chain[len(bc.chain)-1]
+}
+
+// CreateBlock creates a new block with the nonce and previousHash and appends it to the current chain
+func (bc *Blockchain) CreateBlock(nonce int, previousHash [32]byte) *Block {
+	b := NewBlock(nonce, previousHash, bc.transactionPool)
+	//empties pool
+	bc.transactionPool = []*Transaction{}
+	bc.chain = append(bc.chain, b)
 	return b
 }
 

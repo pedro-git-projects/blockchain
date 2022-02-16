@@ -1,5 +1,4 @@
-// Package transaction contains types functions and methods associated with blockchain transactions
-package transaction
+package blockchain
 
 import (
 	"encoding/json"
@@ -40,4 +39,17 @@ func (t *Transaction) MarshalJSON() ([]byte, error) {
 		Recipient: t.recipientBlockChainAdress,
 		Value:     t.value,
 	})
+}
+
+func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32) {
+	t := NewTransaction(sender, recipient, value)
+	bc.transactionPool = append(bc.transactionPool, t)
+}
+
+func (bc *Blockchain) CopyTransactionPool() []*Transaction {
+	transactions := make([]*Transaction, 0)
+	for _, t := range bc.transactionPool {
+		transactions = append(transactions, NewTransaction(t.senderBlockChainAdress, t.recipientBlockChainAdress, t.value))
+	}
+	return transactions
 }
