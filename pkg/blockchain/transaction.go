@@ -53,3 +53,21 @@ func (bc *Blockchain) CopyTransactionPool() []*Transaction {
 	}
 	return transactions
 }
+
+// CalculateTotalAmount calculates transaction results
+func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float32 {
+	var totalAmount float32
+	for _, b := range bc.chain {
+		for _, t := range b.transactions {
+			value := t.value
+			if blockchainAddress == t.recipientBlockChainAdress {
+				totalAmount += value
+			}
+
+			if blockchainAddress == t.senderBlockChainAdress {
+				totalAmount -= value
+			}
+		}
+	}
+	return totalAmount
+}

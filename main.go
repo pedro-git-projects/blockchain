@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/pedro-git-projects/blockchain/pkg/blockchain"
 )
 
@@ -18,4 +20,7 @@ func main() {
 
 	noobChain.Print()
 
+	fmt.Printf("my_address %2.f\n", noobChain.CalculateTotalAmount("my_address"))
+	fmt.Printf("X %2.f\n", noobChain.CalculateTotalAmount("X"))
+	fmt.Printf("Y %2.f\n", noobChain.CalculateTotalAmount("Y"))
 }
