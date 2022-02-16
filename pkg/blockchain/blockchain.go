@@ -1,3 +1,4 @@
+// Package blockchain provides the blockchain type and functions
 package blockchain
 
 import (
@@ -5,14 +6,15 @@ import (
 	"strings"
 
 	"github.com/pedro-git-projects/blockchain/pkg/block"
+	"github.com/pedro-git-projects/blockchain/pkg/transaction"
 )
 
 var (
-	separator = strings.Repeat("-", 35)
+	separator = strings.Repeat("=", 35)
 )
 
 type Blockchain struct {
-	transactionPool []string
+	transactionPool []*transaction.Transaction
 	chain           []*block.Block
 }
 
@@ -39,7 +41,14 @@ func (bc *Blockchain) LastBlock() *block.Block {
 
 // CreateBlock creates a new block with the nonce and previousHash and appends it to the current chain
 func (bc *Blockchain) CreateBlock(nonce int, previousHash [32]byte) *block.Block {
-	b := block.NewBlock(nonce, previousHash)
+	b := block.NewBlock(nonce, previousHash, bc.transactionPool)
+	//empties pool
+	bc.transactionPool = []*transaction.Transaction{}
 	bc.chain = append(bc.chain, b)
 	return b
+}
+
+func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32) {
+	t := transaction.NewTransaction(sender, recipient, value)
+	bc.transactionPool = append(bc.transactionPool, t)
 }
