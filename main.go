@@ -6,19 +6,15 @@ import (
 
 func main() {
 
-	noobChain := blockchain.NewBlockchain()
-	noobChain.Print()
+	myAddress := "my_address"
+	noobChain := blockchain.NewBlockchain(myAddress)
 
 	noobChain.AddTransaction("A", "B", 0.32)
-	nonce := noobChain.ProofOfWork()
-	previousHash := noobChain.LastBlock().Hash()
-	noobChain.CreateBlock(nonce, previousHash)
+	noobChain.Mining()
 
 	noobChain.AddTransaction("X", "Y", 4)
 	noobChain.AddTransaction("P", "Q", 2.22)
-	noobChain.LastBlock().Hash()
-	nonce = noobChain.ProofOfWork()
-	noobChain.CreateBlock(nonce, previousHash)
+	noobChain.Mining()
 
 	noobChain.Print()
 
