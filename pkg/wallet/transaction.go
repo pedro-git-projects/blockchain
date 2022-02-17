@@ -5,33 +5,21 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
-	"math/big"
+
+	"github.com/pedro-git-projects/blockchain/pkg/utils"
 )
 
 type Transaction struct {
-	senderPrivateKey          *ecdsa.PrivateKey
-	senderPublicKey           *ecdsa.PublicKey
-	senderBlockChainAdress    string
-	recipientBlockChainAdress string
-	value                     float32
+	senderPrivateKey           *ecdsa.PrivateKey
+	senderPublicKey            *ecdsa.PublicKey
+	senderBlockchainAddress    string
+	recipientBlockchainAddress string
+	value                      float32
 }
 
-type Signature struct {
-	R *big.Int
-	S *big.Int
-}
-
-func NewTransaction(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey, sender string, recipient string, value float32) *Transaction {
+func NewTransaction(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey,
+	sender string, recipient string, value float32) *Transaction {
 	return &Transaction{privateKey, publicKey, sender, recipient, value}
-}
-
-func (t *Transaction) GenerateSignature() *Signature {
-	m, _ := json.Marshal(t)
-	h := sha256.Sum256([]byte(m))
-
-	r, s, _ := ecdsa.Sign(rand.Reader, t.senderPrivateKey, h[:])
-	return &Signature{r, s}
 }
 
 func (t *Transaction) MarshalJSON() ([]byte, error) {
@@ -40,12 +28,15 @@ func (t *Transaction) MarshalJSON() ([]byte, error) {
 		Recipient string  `json:"recipient_blockchain_address"`
 		Value     float32 `json:"value"`
 	}{
-		Sender:    t.senderBlockChainAdress,
-		Recipient: t.recipientBlockChainAdress,
+		Sender:    t.senderBlockchainAddress,
+		Recipient: t.recipientBlockchainAddress,
 		Value:     t.value,
 	})
 }
 
-func (s *Signature) String() string {
-	return fmt.Sprintf("%x%x", s.R, s.S)
+func (t *Transaction) GenerateSignature() *utils.Signature {
+	m, _ := json.Marshal(t)
+	h := sha256.Sum256([]byte(m))
+	r, s, _ := ecdsa.Sign(rand.Reader, t.senderPrivateKey, h[:])
+	return &utils.Signature{R: r, S: s}
 }

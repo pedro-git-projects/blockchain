@@ -29,6 +29,7 @@ func NewWallet() *Wallet {
 	h2.Write(w.publicKey.X.Bytes())
 	h2.Write(w.publicKey.Y.Bytes())
 	digest2 := h2.Sum(nil)
+
 	// Hash the result of the SHA-256 hashing using RIPEMD-160
 	h3 := ripemd160.New()
 	h3.Write(digest2)
@@ -55,15 +56,10 @@ func NewWallet() *Wallet {
 	// Include the checksum after the digest
 	dc8 := make([]byte, 25)
 	copy(dc8[:21], vd4[:])
-	copy(dc8[21:], chsum)
+	copy(dc8[21:], chsum[:])
 
 	// convert the result from byte to string into base 58
 	address := base58.Encode(dc8)
 	w.blockchainAddress = address
 	return w
-}
-
-// can't be rewritten
-func (w *Wallet) BlockchainAddress() string {
-	return w.blockchainAddress
 }
